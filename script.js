@@ -46,11 +46,43 @@ function renderQuestions() {
       if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
       }
-      const choiceText = document.createTextNode(choice);
+		 const choiceLabel = document.createElement("label");
+         choiceLabel.textContent = choice;
+      //const choiceText = document.createTextNode(choice);
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
     }
     questionsElement.appendChild(questionElement);
   }
 }
-renderQuestions();
+//renderQuestions();
+function calculateScore() {
+    let score = 0;
+    for (let i = 0; i < questions.length; i++) {
+        const question = questions[i];
+        const savedAnswer = sessionStorage.getItem(`question-${i}`);
+        if (savedAnswer === question.answer) {
+            score++;
+        }
+    }
+    return score;
+}
+
+function displayScore() {
+    const score = calculateScore();
+    scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
+    localStorage.setItem('score', score);
+}
+
+submitButton.addEventListener('click', () => {
+    displayScore();
+    sessionStorage.clear();
+});
+
+window.addEventListener('load', () => {
+    renderQuestions();
+    const storedScore = localStorage.getItem('score');
+    if (storedScore !== null) {
+        scoreElement.textContent = `Your last score was ${storedScore} out of ${questions.length}.`;
+    }
+});
